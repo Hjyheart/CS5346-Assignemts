@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<html>
+    <head>
+        <script src="https://d3js.org/d3.v6.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-cloud/1.2.5/d3.layout.cloud.js"></script>
+    </head>
+    <style>
+    </style>
+    <body>
+        
+        <div id="text_viz"></div>
+        
+        <script>
+        const width = 1500
+        const height = 800
+        const font_size = 18
+        margin_right = 250
+
+        // Main SVG Board
+        const mb_para = {
+            "width" : width,
+            "height" : height,
+            "margin_left": 50,
+            "margin_right": margin_right,
+            "margin_top": 50,
+            "margin_buttom": 50,
+        }
+        
+        const mb_bounded = {
+            "width" : mb_para.width - mb_para.margin_left - mb_para.margin_right,
+            "height" : mb_para.height - mb_para.margin_top - mb_para.margin_buttom,
+        }
+        
+        var mb_svg = d3.select("#text_viz")
+                        .append("div")
+                        .append("svg")
+                        .style("margin-left", 0)
+                        .style("margin-top", 0)
+                        .attr("id", "main_board_canvas")
+                        .attr("width", mb_para.width)
+                        .attr("height", mb_para.height)
+        var mb_box = mb_svg.append("g")
+                        .attr("id", "main_board_box")
+                        .attr("transform", "translate(" + mb_para.margin_left + "," + mb_para.margin_top + ")")
+        
+        // Color Scale
+        var fill = d3.scaleOrdinal(d3.schemeTableau10);
+
+        var data = [
+            { Teams: "Atlanta Hawks", Win: 1, color1: "#E03A3E" },
+            { Teams: "Boston Celtics", Win: 17, color1: "#007a33" },
+            { Teams: "Brooklyn Nets", Win: 0, color1: "#000" },
+            { Teams: "Charlotte Hornets", Win: 0, color1: "#1D1160" },
+            { Teams: "Chicago Bulls", Win: 6, color1: "#CE1141" },
+            { Teams: "Cleveland Cavaliers", Win: 1, color1: "#6f263d" },
+            { Teams: "Dallas Mavericks", Win: 1, color1: "#00538C" },
+            { Teams: "Denver Nuggets", Win: 0, color1: "#00285E" },
+            { Teams: "Detroit Pistons", Win: 3, color1: "#ED174C" },
+            { Teams: "Golden State Warriors", Win: 6, color1: "#006BB6" },
+            { Teams: "Houston Rockets", Win: 2, color1: "#ce1141" },
+            { Teams: "Indiana Pacers", Win: 0, color1: "#002D62" },
+            { Teams: "Los Angeles Clippers", Win: 0, color1: "#ED174C" },
+            { Teams: "Los Angeles Lakers", Win: 17, color1: "#552583" },
+            { Teams: "Memphis Grizzlies", Win: 0, color1: "#6189B9" },
+            { Teams: "Miami Heat", Win: 3, color1: "#98002e" },
+            { Teams: "Milwaukee Bucks", Win: 1, color1: "#00471b" },
+            { Teams: "Minnesota Timberwolves", Win: 0, color1: "#0c2340" },
+            { Teams: "New Orleans Pelicans", Win: 0, color1: "#002b5c" },
+            { Teams: "New York Knicks", Win: 2, color1: "#006BB6" },
+            { Teams: "Oklahoma City Thunder", Win: 1, color1: "#007AC1" },
+            { Teams: "Orlando Magic", Win: 0, color1: "#1D1160" },
+            { Teams: "Philadelphia 76ers", Win: 3, color1: "#006BB6" },
+            { Teams: "Phoenix Suns", Win: 0, color1: "#1D1160" },
+            { Teams: "Portland Trail Blazers", Win: 1, color1: "#E03A3E" },
+            { Teams: "Sacramento Kings", Win: 1, color1: "#5A2D81" },
+            { Teams: "San Antonio Spurs", Win: 5, color1: "#000" },
+            { Teams: "Toronto Raptors", Win: 1, color1: "#CE1141" },
+            { Teams: "Utah Jazz", Win: 0, color1: "#002B5C" },
+            { Teams: "Washington Wizards", Win: 1, color1: "#002B5C" },
+        ]
+        
+        function textDataViz(data)
+        {
+            var layout = d3.layout.cloud()
+                        .text((d) => d.Teams)
+                        .fontSize((d) => Math.sqrt((d.Win + 1) * 40))
+                        .size([mb_bounded.width, mb_bounded.height])
+                        .words(data)
+                        .on("end", draw);
+            layout.start();    
+            
+            function draw(words) {
+                console.log(words)
+                mb_box.append("g")
+                    .attr("transform", "translate(" + layout.size()[0] / 2 + "," + layout.size()[1] / 2 + ")")
+                    .selectAll("text")
+                    .data(words)
+                    .enter()
+                    .append("text")
+                    .text((d) => d.Teams + ': ' + d.Win)
+                    .style("font-size", (d) => d.size + "px")
+                    .style("font-family", (d) => d.font)
+                    .style("fill", (d, i) => d.color1)
+                    .attr("text-anchor", "middle")
+                    .attr("transform", (d) => "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")");
+            }
+        }
+
+        textDataViz(data)
+
+        </script>
+    </body>
+</html>
